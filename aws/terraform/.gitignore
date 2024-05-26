@@ -1,0 +1,10 @@
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Node build output
+build/
+
+# Node modules
+node_modules/
