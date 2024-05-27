@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List files in working directory
+      - name: List files in root directory
         run: ls -la
 
       - name: Set up Node.js
@@ -22,19 +22,33 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          npm install
         working-directory: ./cbt-form
 
+      - name: List files in cbt-form directory
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la ./cbt-form
+
       - name: List files in public directory
-        run: ls -la ./cbt-form/public
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la ./cbt-form/public
 
       - name: Verify index.html file
-        run: cat ./cbt-form/public/index.html
+        run: |
+          echo "Current directory: $(pwd)"
+          cat ./cbt-form/public/index.html
 
       - name: Build React app
         env:
           PUBLIC_URL: ./
-        run: npm run build
+        run: |
+          echo "Current directory: $(pwd)"
+          npm run build
         working-directory: ./cbt-form
 
       - name: Configure AWS credentials
@@ -45,32 +59,15 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync S3 bucket
-        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
+          echo "Current directory: $(pwd)"
           aws s3 sync cbt-form/build/ s3://${{ secrets.S3_BUCKET }} --delete
-          echo "Exit code: $?"
-          aws s3 ls s3://${{ secrets.S3_BUCKET }} --summarize
 
       - name: Debug List S3 Bucket Contents
-        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          aws s3 ls s3://${{ secrets.S3_BUCKET }}
-          echo "Exit code: $?"
-
-      - name: Invalidate CloudFront
-        continue-on-error: true
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-          echo "Exit code: $?"
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS
