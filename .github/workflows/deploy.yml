@@ -47,9 +47,10 @@ jobs:
         env:
           PUBLIC_URL: ./
         run: |
-          echo "Current directory: $(pwd)"
+          echo "Current directory before cd: $(pwd)"
+          cd ./cbt-form
+          echo "Current directory after cd: $(pwd)"
           npm run build
-        working-directory: ./cbt-form
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -84,4 +85,3 @@ jobs:
         run: |
           echo "Current directory: $(pwd)"
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-
