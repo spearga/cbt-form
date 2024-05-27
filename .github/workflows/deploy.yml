@@ -27,10 +27,13 @@ jobs:
 
       - name: List files in public directory
         run: ls -la ./cbt-form/public
-        # This step lists the contents of the public directory to verify that index.html is present.
+
+      - name: Verify index.html file
+        run: cat ./cbt-form/public/index.html
 
       - name: Build React app
-        run: npm run build
+        run: |
+          npm run build
         working-directory: ./cbt-form
 
       - name: Configure AWS credentials
