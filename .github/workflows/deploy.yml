@@ -32,8 +32,9 @@ jobs:
         run: cat ./cbt-form/public/index.html
 
       - name: Build React app
-        run: |
-          npm run build
+        env:
+          PUBLIC_URL: ./
+        run: npm run build
         working-directory: ./cbt-form
 
       - name: Configure AWS credentials
@@ -44,32 +45,22 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync S3 bucket
-        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          aws s3 sync cbt-form/build/ s3://${{ secrets.S3_BUCKET }} --delete
-          echo "Exit code: $?"
-          aws s3 ls s3://${{ secrets.S3_BUCKET }} --summarize
+        run: aws s3 sync cbt-form/build/ s3://${{ secrets.S3_BUCKET }} --delete
 
       - name: Debug List S3 Bucket Contents
-        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          aws s3 ls s3://${{ secrets.S3_BUCKET }}
-          echo "Exit code: $?"
+        run: aws s3 ls s3://${{ secrets.S3_BUCKET }}
 
       - name: Invalidate CloudFront
-        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-          echo "Exit code: $?"
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
