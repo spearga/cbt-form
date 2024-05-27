@@ -33,37 +33,32 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync S3 bucket
-        run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
+        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        # Adding debug information for troubleshooting
-        continue-on-error: true
         run: |
           aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
           echo "Exit code: $?"
           aws s3 ls s3://${{ secrets.S3_BUCKET }} --summarize
 
       - name: Debug List S3 Bucket Contents
-        run: aws s3 ls s3://${{ secrets.S3_BUCKET }}
+        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        continue-on-error: true
         run: |
           aws s3 ls s3://${{ secrets.S3_BUCKET }}
           echo "Exit code: $?"
 
       - name: Invalidate CloudFront
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-        continue-on-error: true
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
           echo "Exit code: $?"
