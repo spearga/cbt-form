@@ -8,15 +8,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./cbt-form
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List files in root directory
+      - name: List files in the root directory
         run: ls -la
 
       - name: Set up Node.js
@@ -25,27 +22,26 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
+        working-directory: ./cbt-form
         run: |
           echo "Current directory: $(pwd)"
           ls -la
           npm install
 
-      - name: List files in cbt-form directory
+      - name: List files in the public directory
+        working-directory: ./cbt-form
         run: |
           echo "Current directory: $(pwd)"
-          ls -la
-
-      - name: List files in public directory
-        run: |
-          echo "Current directory: $(pwd)"
-          ls -la ./public
+          ls -la public
 
       - name: Verify index.html file
+        working-directory: ./cbt-form
         run: |
           echo "Current directory: $(pwd)"
-          cat ./public/index.html
+          cat public/index.html
 
       - name: Build React app
+        working-directory: ./cbt-form
         env:
           PUBLIC_URL: ./
         run: |
@@ -60,6 +56,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync S3 bucket
+        working-directory: ./cbt-form
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -79,4 +76,3 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
-
