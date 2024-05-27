@@ -12,18 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # This step checks out the repository code to the GitHub Actions runner.
+
+      - name: List files in working directory
+        run: ls -la
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Update to Node.js 20
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./cbt-form
 
       - name: Build React app
         run: npm run build
+        working-directory: ./cbt-form
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -39,7 +43,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          aws s3 sync build/ s3://${{ secrets.S3_BUCKET }} --delete
+          aws s3 sync cbt-form/build/ s3://${{ secrets.S3_BUCKET }} --delete
           echo "Exit code: $?"
           aws s3 ls s3://${{ secrets.S3_BUCKET }} --summarize
 
