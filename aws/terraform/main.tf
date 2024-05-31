@@ -1,7 +1,9 @@
+# Provider Configuration
 provider "aws" {
   region = "eu-west-1"
 }
 
+# S3 Bucket Configuration
 resource "aws_s3_bucket" "cbt_gs" {
   bucket = "cbt-gs"
 }
@@ -20,6 +22,7 @@ resource "aws_s3_bucket_website_configuration" "cbt_gs" {
 
 resource "aws_s3_bucket_versioning" "cbt_gs" {
   bucket = aws_s3_bucket.cbt_gs.bucket
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -34,6 +37,7 @@ resource "aws_s3_bucket_public_access_block" "cbt_gs" {
   restrict_public_buckets = false
 }
 
+# CloudFront Configuration
 resource "aws_cloudfront_origin_access_identity" "cbt_gs" {
   comment = "OAI for CBT GS Bucket"
 }
