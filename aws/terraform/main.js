@@ -1,12 +1,49 @@
-'use strict';
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
 
-exports.handler = function (event, context, callback) {
-    var response = {
-        statusCode: 200,
-        headers: {
-            'Content-Type': 'text/html; charset=utf-8',
-        },
-        body: "<p>Hello world!</p>",
+exports.handler = async (event) => {
+  try {
+    // Parse the incoming request body
+    const requestBody = JSON.parse(event.body);
+
+    // Extract form data
+    const formData = {
+      situation: requestBody.situation,
+      emotionLabel: requestBody.emotionLabel,
+      emotionValue: requestBody.emotionValue,
+      physicalSensations: requestBody.physicalSensations,
+      unhelpfulThoughts: requestBody.unhelpfulThoughts,
+      alternativeThoughts: requestBody.alternativeThoughts,
+      actions: requestBody.actions,
+      bestResponse: requestBody.bestResponse,
+      reRateEmotion: requestBody.reRateEmotion
     };
-    callback(null, response);
+
+    // Define S3 bucket and key
+    const bucketName = 'your-s3-bucket-name'; // Replace with your bucket name
+    const key = `form-data/${Date.now()}.json`; // Unique key for each form submission
+
+    // Prepare the parameters for the S3 putObject call
+    const params = {
+      Bucket: bucketName,
+      Key: key,
+      Body: JSON.stringify(formData),
+      ContentType: 'application/json'
+    };
+
+    // Save the form data to S3
+    await s3.putObject(params).promise();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Form data saved successfully' })
+    };
+  } catch (error) {
+    console.error('Error saving form data to S3:', error);
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Failed to save form data', error: error.message })
+    };
+  }
 };
