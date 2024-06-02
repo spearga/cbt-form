@@ -20,7 +20,7 @@ exports.handler = async (event) => {
     };
 
     // Define S3 bucket and key
-    const bucketName = 'your-s3-bucket-name'; // Replace with your bucket name
+    const bucketName = 'cbt-gs'; // Replace with your bucket name
     const key = `form-data/${Date.now()}.json`; // Unique key for each form submission
 
     // Prepare the parameters for the S3 putObject call
