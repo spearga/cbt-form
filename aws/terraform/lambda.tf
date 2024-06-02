@@ -28,7 +28,7 @@ EOF
       "Action": [
         "s3:GetObject"
       ],
-      "Resource": "arn:aws:s3:::cbt-gs/v1.0.0/lambda.zip"
+      "Resource": "arn:aws:s3:::cbt-gs/v1.0.2/lambda.zip"
     }
   ]
 }
@@ -39,7 +39,7 @@ EOF
 resource "aws_lambda_function" "example" {
   function_name = "ServerlessExample"
   s3_bucket     = "cbt-gs"
-  s3_key        = "v1.0.0/lambda.zip"
+  s3_key        = "v1.0.2/lambda.zip"
   handler       = "main.handler"
   runtime       = "nodejs18.x"
   role          = aws_iam_role.lambda_exec.arn
