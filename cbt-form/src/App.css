@@ -76,6 +76,35 @@ body {
   background-color: var(--button-hover);
 }
 
+/* Navigation styling */
+nav {
+  background-color: var(--container-background);
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+nav ul li {
+  margin: 0 10px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
 /* Main content styling */
 .main-content {
   padding: 20px 0;
@@ -161,6 +190,36 @@ button:hover {
 
 .footer p {
   margin: 0;
+  color: var(--text-color);
+}
+
+/* Styling for the thinking habits page */
+.habit {
+  border-bottom: 1px solid var(--input-border);
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.habitTitle {
+  color: var(--button-background);
+}
+
+.habitDescription {
+  color: var(--text-color);
+}
+
+.subtype {
+  margin-left: 20px;
+  padding: 10px;
+  background-color: var(--input-background);
+  border-radius: 5px;
+}
+
+.subtypeTitle {
+  color: var(--button-background);
+}
+
+.subtypeDescription {
   color: var(--text-color);
 }
 
