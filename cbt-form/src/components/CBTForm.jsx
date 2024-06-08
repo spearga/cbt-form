@@ -37,14 +37,30 @@ const CBTForm = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
       console.log('Form submitted:', form);
-      // Handle form submission, e.g., send it to an API
+      try {
+        const response = await fetch('https://iliasoxlx7.execute-api.eu-west-1.amazonaws.com/prod/form-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(form)
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Success:', data);
+        } else {
+          console.error('Error:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
