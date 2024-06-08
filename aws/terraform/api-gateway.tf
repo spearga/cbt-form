@@ -21,12 +21,12 @@ resource "aws_api_gateway_method" "post_form_data" {
 
 # Create an integration for the POST method
 resource "aws_api_gateway_integration" "post_form_data_integration" {
-  rest_api_id = aws_api_gateway_rest_api.example_api.id
-  resource_id = aws_api_gateway_resource.form_data.id
-  http_method = aws_api_gateway_method.post_form_data.http_method
-  type        = "AWS_PROXY"
+  rest_api_id             = aws_api_gateway_rest_api.example_api.id
+  resource_id             = aws_api_gateway_resource.form_data.id
+  http_method             = aws_api_gateway_method.post_form_data.http_method
+  type                    = "AWS_PROXY"
   integration_http_method = "POST"
-  uri         = aws_lambda_function.example.invoke_arn
+  uri                     = aws_lambda_function.example.invoke_arn
 }
 
 # Create a GET method for retrieving form data
@@ -39,12 +39,112 @@ resource "aws_api_gateway_method" "get_form_data" {
 
 # Create an integration for the GET method
 resource "aws_api_gateway_integration" "get_form_data_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.example_api.id
+  resource_id             = aws_api_gateway_resource.form_data.id
+  http_method             = aws_api_gateway_method.get_form_data.http_method
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = aws_lambda_function.example.invoke_arn
+}
+
+# Add OPTIONS method for CORS preflight
+resource "aws_api_gateway_method" "options_form_data" {
+  rest_api_id   = aws_api_gateway_rest_api.example_api.id
+  resource_id   = aws_api_gateway_resource.form_data.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+# Mock integration for OPTIONS method
+resource "aws_api_gateway_integration" "options_form_data_integration" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.options_form_data.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = jsonencode(
+      {
+        statusCode = 200
+      }
+    )
+  }
+}
+
+# Method response for OPTIONS
+resource "aws_api_gateway_method_response" "options_200" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.options_form_data.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+# Integration response for OPTIONS
+resource "aws_api_gateway_integration_response" "options_200" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.options_form_data.http_method
+  status_code = aws_api_gateway_method_response.options_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
+
+# Method response for POST
+resource "aws_api_gateway_method_response" "post_200" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.post_form_data.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# Integration response for POST
+resource "aws_api_gateway_integration_response" "post_200" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.post_form_data.http_method
+  status_code = aws_api_gateway_method_response.post_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
+}
+
+# Method response for GET
+resource "aws_api_gateway_method_response" "get_200" {
   rest_api_id = aws_api_gateway_rest_api.example_api.id
   resource_id = aws_api_gateway_resource.form_data.id
   http_method = aws_api_gateway_method.get_form_data.http_method
-  type        = "AWS_PROXY"
-  integration_http_method = "POST"
-  uri         = aws_lambda_function.example.invoke_arn
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
+# Integration response for GET
+resource "aws_api_gateway_integration_response" "get_200" {
+  rest_api_id = aws_api_gateway_rest_api.example_api.id
+  resource_id = aws_api_gateway_resource.form_data.id
+  http_method = aws_api_gateway_method.get_form_data.http_method
+  status_code = aws_api_gateway_method_response.get_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
+  }
 }
 
 # Deploy the API
@@ -54,6 +154,8 @@ resource "aws_api_gateway_deployment" "example_api_deployment" {
     aws_api_gateway_integration.post_form_data_integration,
     aws_api_gateway_method.get_form_data,
     aws_api_gateway_integration.get_form_data_integration,
+    aws_api_gateway_method.options_form_data,
+    aws_api_gateway_integration.options_form_data_integration
   ]
 
   rest_api_id = aws_api_gateway_rest_api.example_api.id
