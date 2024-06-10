@@ -4,7 +4,13 @@
     "description": "Lambda function to handle CBT form data",
     "main": "main.js",
     "dependencies": {
-      "aws-sdk": "^2.814.0"
-    }
-  }
-  
+        "aws-sdk": "^2.814.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}

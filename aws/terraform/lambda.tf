@@ -53,6 +53,6 @@ resource "aws_lambda_function" "example" {
   handler       = "main.handler"
   runtime       = "nodejs18.x"
   s3_bucket     = "cbt-gs"
-  s3_key        = "v1.0.2/lambda.zip"
+  s3_key        = "v1.0.4/lambda.zip"
 }
 
