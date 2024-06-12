@@ -30,7 +30,6 @@ const App = () => {
             <Routes>
               <Route path="/" element={<>
                 <h1>Welcome to CBT Tools</h1>
-                <p>Select a page from the navigation above.</p>
               </>} />
               <Route path="/thinking-errors" element={<ThinkingErrors />} />
               <Route path="/cbt-form" element={<CBTForm />} />
